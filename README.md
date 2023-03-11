@@ -7,6 +7,8 @@ The algorithm works only with categorical features, in both the X and y columns.
 
 The algorithm works by creating a set of rules for each class in the target column. The method works on unseen data in a first-rule-to-fire manner, and so all rules are generated and ordered in a sensible order. For each value in the target column, the algorithm generates one rule at a time. As each rule is discovered, the rows matching that rule are removed, and the next rule is found to best describe the remaining rows. The rules may have any number of terms. For each value in the target column, we start again with the full dataset. 
 
+This implementation enhances the algorithm as described in Principles of Data Mining by outputting statistics related to each rule, as many induced rules can be of minimal significance, or at least much lower signficance than other rules induced. As well, it allows providing a parameter to specify the minimum support for each rule: the minimum number of rows in the training data for whihc it applies. This helps reduce noise, though can result in some target classes having few or no rules, where there are no rules which can be induced using the PRISM algorithm. 
+
 ## Examples
 
 
