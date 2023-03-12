@@ -11,9 +11,15 @@ This implementation enhances the algorithm as described in Principles of Data Mi
 
 ## Examples
 
+## Parameters
 
-## Usage
+
+
+## Installation
 The project consists of a single python file, prism_rules.py which may be downloaded and included in any project. 
+
+## Performance
+The algorithm is generally able to produce a set of rules in seconds or minutes, but if it is necessary to decrease the execution time of the algorithm, it generally works well on samples of the data; this is safe, as the model is looking for general patterns as opposed to exceptions, and these will be present in any sufficiently large sample. As well the min_coverage, min_prob, and nbins parameters may be set to reduce execution time. Setting min_coverage and min_probs to higher values will encourage early stopping. Setting nbins to lower values (the minimum is two), will result in less categorical values being produced per numeric column, which reduces the number of potential rules to be explored at each step. 
 
 ## References
 [1] Chendrowska, J. (1987) PRISM: An Algorithm for Inducing Modular Rules. International Journal of Man-Machine Studies, vol 27, pp. 349-370.
