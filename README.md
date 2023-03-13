@@ -150,14 +150,15 @@ prism = PrismRules(min_coverage=10, min_prob=0.75, nbins=3, verbose=0)
 
 **min_coverage**: int 
 
-The minimum number of rows each rule must cover in the training data. This may be adjusted to control the number of rules generated.
+&nbsp;&nbsp;The minimum number of rows each rule must cover in the training data. This may be adjusted to control the number of rules generated.
 
 **min_prob**: float
             
-The minimum support each rule must cover. This is the number of rows that match the current value in the target class for the subset of rows implied by the rule. 
+&nbsp;&nbsp;The minimum support each rule must cover. This is the number of rows that match the current value in the target class for the subset of rows implied by the rule. 
 
 **nbins**: int
-The number of bins used to bin numeric columns. This may be adjusted to produce more meaningful rules. 
+
+&nbsp;&nbsp;The number of bins used to bin numeric columns. This may be adjusted to produce more meaningful rules. 
 
 ## verbose: int 
 If 0, no output is produced other than the induced rules. If 1, progress indicators are presented as each rule is induced. 
@@ -172,11 +173,15 @@ Given a dataframe with a specified target column, find a set of rules that descr
 
 **df**: Pandas datafram 
 
-Must include the target column.
+&nbsp;&nbsp;Must include the target column.
 
 **target_col**: str
             
-Name of the target column
+&nbsp;&nbsp;Name of the target column
+
+**display_stats**: bool
+            
+&nbsp;&nbsp;If True, the support and coverage for each rule will be displayed
 
 
 ## Performance
