@@ -166,7 +166,7 @@ prism = PrismRules(min_coverage=10, min_prob=0.75, nbins=3, verbose=0)
 ```
 #### Parameters
 
-**min_coverage**: int 
+**min_coverage**: int
 
 &nbsp;&nbsp;The minimum number of rows each rule must cover in the training data. This may be adjusted to control the number of rules generated.
 
