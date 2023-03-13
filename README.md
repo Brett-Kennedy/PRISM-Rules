@@ -31,6 +31,22 @@ leads to a surpisingly complex tree. In fact, this is a common pattern that resu
 
 While the converse is also often true, rules can often generate more interpretable models than can decision trees, and are useful to try on datasets. And, where the goal is not building a model, but understanding the data, using multiple models may be advantageous to capture different elements of the data. 
 
+## Installation
+
+The project consists of a single [python file](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/prism_rules.py) which may be downloaded and included in any project using:
+
+```python
+from prism_rules import PrismRules
+```
+
+## Example Notebooks
+
+Two example notebooks are provided here. 
+
+[All Columns](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/PRISM%20Rules%20-%20All%20Columns.ipynb) provides an example examining a single file, creating PRISM rules for each column where possible. 
+
+[Rule Examples](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/PRISM%20Rules%20Examples.ipynb) provides examples with several real and synthetic datasets, predicting the target column for each. 
+
 ## Example using the Wine dataset from sklearn
 
 To use the tool, simply create a PrismRules object and call get_prism_rules():
