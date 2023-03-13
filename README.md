@@ -43,9 +43,9 @@ from prism_rules import PrismRules
 
 Two example notebooks are provided here. 
 
-[All Columns](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/PRISM%20Rules%20-%20All%20Columns.ipynb) provides an example examining a single file, creating PRISM rules for each column where possible. 
+[All Columns](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/Examples/PRISM%20Rules%20-%20All%20Columns.ipynb) provides an example examining a single file, creating PRISM rules for each column where possible. 
 
-[Rule Examples](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/PRISM%20Rules%20Examples.ipynb) provides examples with several real and synthetic datasets, predicting the target column for each. 
+[Rule Examples](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/Examples/PRISM%20Rules%20Examples.ipynb) provides examples with several real and synthetic datasets, predicting the target column for each. 
 
 ## Example using the Wine dataset from sklearn
 
