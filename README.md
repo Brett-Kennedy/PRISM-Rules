@@ -3,35 +3,37 @@
 ## Background
 PRISM is a rules-induction system first proposed by Chendrowska [[1]](#references) [[2]](#references) and described in Principles of Data Mining [[3]](#references). While there are numerous other rule induction systems that are able to, at least for some datasets, construct accurate and interpretable rules, to our knowledge there was no implementation of PRISM in python available, and it can be a useful tool for data mining and for prediction, often producing a clean set of iterpretable rules. This implementation is strictly for data mining and exploratory data analysis; it does not provide the ability to predict on unseen data, though the PRISM algoithm itself supports this and future releases of this package may as well. 
 
-The rules produced are in disjunctive normal form (an OR of ANDs), with each individual rule being the AND of one or more terms, with each term of the form Feature = Value, for some Value within the values for Feature. for example: the rules may be:
+The rules produced are in disjunctive normal form (an OR of ANDs), with each individual rule being the AND of one or more terms, with each term of the form Feature = Value, for some Value within the values for that Feature. for example: the rules produced may be of the form:
 
 Rules for target value: 'blue':
-if Feat_A = 'hot' and Feat_C = 'round' then 'blue'
-if Feat_A = 'warm' and Feat_C = 'square' then 'blue'
+- IF feat_A = 'hot' AND feat_C = 'round' THEN 'blue'
+- IF feat_A = 'warm' AND feat_C = 'square' THEN 'blue'
 
 Rules for target value: 'red':
-if Feat_A = 'cold' and Feat_C = 'triangular' then 'red'
-if Feat_A = 'cool' and Feat_C = 'triangular' then 'red'
+- IF feat_A = 'cold' AND feat_C = 'triangular' THEN 'red'
+- IF feat_A = 'cool' AND feat_C = 'triangular' THEN 'red'
 
 The algorithm works strictly with categorical features, in both the X and Y columns. This implementation will, therefore, automatically bin any numeric columns to support the algorithm. By default, three equal-count bins (representing low, medium, and high values for the feature) are used, but this is configurable. 
 
 The algorithm works by creating a set of rules for each class in the target column. The generated rules should be read in a first-rule-to-fire manner, and so all rules are generated and presented in a sensible order. For each value in the target column, the algorithm generates one rule at a time. As each rule is discovered, the rows matching that rule are removed, and the next rule is found to best describe the remaining rows. The rules may each have any number of terms. For each value in the target column, we start again with the full dataset, again removing rows as rules are discovered, and generating additional rules to explain the remaining rows for this target class value. 
 
-This implementation enhances the algorithm as described in Principles of Data Mining by outputting statistics related to each rule, as many induced rules can be of minimal significance, or of substantially lower signficance than other rules induced. As well, it allows providing a parameters to specify the minimum coverage for each rule: the minimum number of rows in the training data for which it applies, and the minimum support: the minimum probability of the target class matching the descired value for rows matching the rule. These help reduce noise, though can result in some target classes having few or no rules, potentially not covering all rows for one or more target column values. 
+This implementation enhances the algorithm as described in Principles of Data Mining by outputting statistics related to each rule, as many induced rules can be of minimal significance, or of substantially lower signficance than other rules induced. As well, it allows providing parameters to specify the minimum coverage for each rule: the minimum number of rows in the training data for which it applies, and the minimum support: the minimum probability of the target class matching the descired value for rows matching the rule. These help reduce noise, though can result in some target classes having few or no rules, potentially not covering all rows for one or more target column values. In these cases, users may wish to adjust these paramaters. 
 
 ## Comparison to Decision Tree
-Decision trees are among the most common interpretable models, quite possibly the most common. When sufficiently small, they can be reasonably interpretable, perhaps as interpretable as any model type, and they can be reasonably accurate for many problems. They do have limitations as interpretable models, which PRISM was designed to address. Decision trees were not specifically designed to be interpretable; it is a convenient property of decision trees that they are as interpretable as they are. They do, however, often grow much larger than is easily comprehensible, for example with repeated sub-trees. The decision paths for indivdiual predictions may include nodes that are irrelevant, or even misleading, to the final predictions. 
+Decision trees are among the most common interpretable models, quite possibly the most common. When sufficiently small, they can be reasonably interpretable, perhaps as interpretable as any model type, and they can be reasonably accurate for many problems. They do have limitations as interpretable models, which PRISM was designed to address. Decision trees were not specifically designed to be interpretable; it is a convenient property of decision trees that they are as interpretable as they are. They do, however, often grow much larger than is easily comprehensible, often with repeated sub-trees as relationships to features have to be repeated many times within the trees to be properly captured. As well, the decision paths for indivdiual predictions may include nodes that are irrelevant, or even misleading, to the final predictions, further reducing comprensibility. 
 
 The Cendrowska paper provides examples of simple sets of rules that cannot be represented easily by trees. For example, the rules:
 
 - Rule 1: IF a = 1 AND b = 1 THEN class = 1
 - Rule 2: IF c = 1 AND d = 1 THEN class = 1
 
-Provides a surpisingly complex tree. In fact, this is a common pattern that results in overly-complex decision trees: "where there are two (underlying) rules with no attribute in common, a situation that is likely to occur frequently in practice"[[3]](#references)
+leads to a surpisingly complex tree. In fact, this is a common pattern that results in overly-complex decision trees: "where there are two (underlying) rules with no attribute in common, a situation that is likely to occur frequently in practice"[[3]](#references)
+
+While the converse is also often true, rules can often generate more interpretable models than can decision trees, and are useful to try on datasets. And, where the goal is not building a model, but understanding the data, using multiple models may be advantageous to capture different elements of the data. 
 
 ## Example using the Wine dataset from sklearn
 
-To use the tool, simply create a PrismRules object, and call get_prism_rules():
+To use the tool, simply create a PrismRules object and call get_prism_rules():
 
 ```python
 data = datasets.load_wine()
@@ -160,18 +162,21 @@ prism = PrismRules(min_coverage=10, min_prob=0.75, nbins=3, verbose=0)
 
 &nbsp;&nbsp;The number of bins used to bin numeric columns. This may be adjusted to produce more meaningful rules. 
 
-## verbose: int 
-If 0, no output is produced other than the induced rules. If 1, progress indicators are presented as each rule is induced. 
+**verbose**: int 
 
-### 
+&nbsp;&nbsp;If 0, no output is produced other than the induced rules. If 1, progress indicators are presented as each rule is induced. 
+
+### get_prism_rules
+```
 get_prism_rules(df, target_col)
+```
 
 Given a dataframe with a specified target column, find a set of rules that describe the patterns associated
-		with the target column. The rules are displayed in a formatted form.
+		with the target column. The rules are displayed in a specific format, including, by default, statistics about each rule.
 
 #### Parameters
 
-**df**: Pandas datafram 
+**df**: Pandas dataframe 
 
 &nbsp;&nbsp;Must include the target column.
 
@@ -183,13 +188,27 @@ Given a dataframe with a specified target column, find a set of rules that descr
             
 &nbsp;&nbsp;If True, the support and coverage for each rule will be displayed
 
+### get_bin_ranges()
+```
+get_bin_ranges()
+```
+
+Get the bin boundaries for the bins used for numeric features. No parameters. Returns a dictionary, with the column names as the keys.
+
+
+
 
 ## Performance
-The algorithm is generally able to produce a set of rules in seconds or minutes, but if it is necessary to decrease the execution time of the algorithm, it generally works well on samples of the data; this is safe, as the model is looking for general patterns as opposed to exceptions, and these will be present in any sufficiently large sample. As well the min_coverage, min_prob, and nbins parameters may be set to reduce execution time. Setting min_coverage and min_probs to higher values will encourage early stopping. Setting nbins to lower values (the minimum is two), will result in less categorical values being produced per numeric column, which reduces the number of potential rules to be explored at each step. 
+The algorithm is generally able to produce a set of rules in seconds or minutes, but if it is necessary to decrease the execution time of the algorithm, a sample of the data may be used in lieu of the full dataset. The alogorithm generally works quite well on samples of the data, as the model is looking for general patterns as opposed to exceptions, and the patterns will be present in any sufficiently large sample. 
+
+As well the min_coverage, min_prob, and nbins parameters may be set to reduce execution time. These are also intended to support the creation of more comprehensible rules, but can favourably affect the execution time where necessary. Setting min_coverage and min_probs to higher values will encourage early stopping. The rules found 
+tend to have have lower probability as the series of rules for a given target value are discovered. This is not strictly always true, but tends to be very often the case, and so specifying a minimum probability will tend to stop the process sooner. 
+
+Setting nbins to lower values (the minimum is two), will result in less categorical values being produced per numeric column, which reduces the number of potential rules to be explored at each step. 
 
 ## References
 [1] Chendrowska, J. (1987) PRISM: An Algorithm for Inducing Modular Rules. International Journal of Man-Machine Studies, vol 27, pp. 349-370.
 
 [2] Chendrowska, J. (1990) Knowledge Acquisition for Expert Systems: Inducing Modular Rules from Examples. PhD Thesis, The Open University. 
 
-[3] Bramer, M. (2007) Principles of Data Mining, Springer press. 
+[3] Bramer, M. (2007) Principles of Data Mining, Springer Press. 
