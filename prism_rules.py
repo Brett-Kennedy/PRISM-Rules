@@ -147,18 +147,18 @@ class PrismRules:
 				rule_str += f"{terms_list[-1][2] * 100:.3f}% of the {num_matching_target} rows matching the rule "
 				rule_str += "\n   Coverage: "
 				rule_str += f"the rule matches: {num_matching_target} out of {num_rows_curr_target} rows "
-				rule_str += f"for target value: {target_val}. This is:"
+				rule_str += f"for target value: '{self.int_to_values_map[target_col][target_val]}'. This is:"
 			else:
 				rule_str += f"The target has value: '{self.int_to_values_map[target_col][target_val]}' for "
 				rule_str += f"{terms_list[-1][2] * 100:.3f}% of the {num_matching_target} remaining rows matching the "
 				rule_str += "rule"
 				rule_str += "\n   Coverage: "
 				rule_str += f"The rule matches: {num_matching_target} out of {num_rows_curr_target_remaining} rows "
-				rule_str += f"remaining for target value: '{target_val}'. This is:"
+				rule_str += f"remaining for target value: '{self.int_to_values_map[target_col][target_val]}'. This is:"
 				rule_str += f"\n      {(num_matching_target * 100.0 / num_rows_curr_target_remaining):.3f}% of "
-				rule_str += f"remaining rows for target value: '{target_val}'"
+				rule_str += f"remaining rows for target value: '{self.int_to_values_map[target_col][target_val]}'"
 			rule_str += f"\n      {(num_matching_target * 100.0 / num_rows_curr_target):.3f}% of total rows for target "
-			rule_str += f"value: {target_val}"
+			rule_str += f"value: '{self.int_to_values_map[target_col][target_val]}'"
 			rule_str += f"\n      {(num_matching_target * 100.0 / len(df_full)):.3f}% of total rows in data"
 			rules_for_val.append(rule_str)
 			is_first_rule = False
