@@ -1,9 +1,9 @@
 # PRISM-Rules
 
 ## Background
-PRISM is a rules-induction system first proposed by Chendrowska [[1]](#references) [[2]](#references) and described in Principles of Data Mining [[3]](#references). While there are numerous other rule induction systems that are able to, at least for some datasets, construct accurate and interpretable rules, to our knowledge there was no implementation of PRISM in python available, and it can be a useful tool for data mining and for prediction, often producing a clean set of iterpretable rules. This implementation is strictly for data mining and exploratory data analysis; it does not provide the ability to predict on unseen data, though the PRISM algoithm itself supports this and future releases of this package may as well. 
+PRISM is a rules-induction system first proposed by Chendrowska [[1]](#references) [[2]](#references) and described in Principles of Data Mining [[3]](#references). While there are numerous other rule induction systems that are able to, at least for some datasets, construct accurate and interpretable rules, to our knowledge there was no implementation of PRISM in python available, and it can be a useful tool for data mining and for prediction, often producing a concise, clean set of iterpretable rules. This implementation is strictly for data mining and exploratory data analysis; it does not provide the ability to predict on unseen data, though the PRISM algoithm itself supports this and future releases of this package may as well. 
 
-The rules produced are in disjunctive normal form (an OR of ANDs), with each individual rule being the AND of one or more terms, with each term of the form Feature = Value, for some Value within the values for that Feature. for example: the rules produced may be of the form:
+The rules produced are in disjunctive normal form (an OR of ANDs), with each individual rule being the AND of one or more terms, with each term of the form Feature = Value, for some Value within the values for that Feature. For example: the rules produced may be of the form:
 
 Rules for target value: 'blue':
 - IF feat_A = 'hot' AND feat_C = 'round' THEN 'blue'
@@ -15,7 +15,7 @@ Rules for target value: 'red':
 
 The algorithm works strictly with categorical features, in both the X and Y columns. This implementation will, therefore, automatically bin any numeric columns to support the algorithm. By default, three equal-count bins (representing low, medium, and high values for the feature) are used, but this is configurable. 
 
-The algorithm works by creating a set of rules for each class in the target column. The generated rules should be read in a first-rule-to-fire manner, and so all rules are generated and presented in a sensible order. For each value in the target column, the algorithm generates one rule at a time. As each rule is discovered, the rows matching that rule are removed, and the next rule is found to best describe the remaining rows. The rules may each have any number of terms. For each value in the target column, we start again with the full dataset, again removing rows as rules are discovered, and generating additional rules to explain the remaining rows for this target class value. 
+The algorithm works by creating a set of rules for each class in the target column. The generated rules should be read in a first-rule-to-fire manner, and so all rules are generated and presented in a sensible order. For each value in the target column, the algorithm generates one rule at a time. As each rule is discovered, the rows matching that rule are removed, and the next rule is found to best describe the remaining rows. The rules may each have any number of terms. For each value in the target column, we start again with the full dataset, removing rows as rules are discovered, and generating additional rules to explain the remaining rows for this target class value. 
 
 This implementation enhances the algorithm as described in Principles of Data Mining by outputting statistics related to each rule, as many induced rules can be of minimal significance, or of substantially lower signficance than other rules induced. As well, it allows providing parameters to specify the minimum coverage for each rule: the minimum number of rows in the training data for which it applies, and the minimum support: the minimum probability of the target class matching the descired value for rows matching the rule. These help reduce noise, though can result in some target classes having few or no rules, potentially not covering all rows for one or more target column values. In these cases, users may wish to adjust these paramaters. 
 
@@ -29,7 +29,7 @@ The Cendrowska paper provides examples of simple sets of rules that cannot be re
 
 leads to a surpisingly complex tree. In fact, this is a common pattern that results in overly-complex decision trees: "where there are two (underlying) rules with no attribute in common, a situation that is likely to occur frequently in practice"[[3]](#references)
 
-While the converse is also often true, rules can often generate more interpretable models than can decision trees, and are useful to try on datasets. And, where the goal is not building a model, but understanding the data, using multiple models may be advantageous to capture different elements of the data. 
+While the opposite is also often true, rules can often generate more interpretable models than can decision trees, and are useful to try on datasets. And, where the goal is not building a model, but understanding the data, using multiple models may be advantageous to capture different elements of the data. 
 
 ## Installation
 
@@ -184,7 +184,7 @@ prism = PrismRules(min_coverage=10, min_prob=0.75, nbins=3, verbose=0)
 
 ### get_prism_rules
 ```
-get_prism_rules(df, target_col)
+get_prism_rules(df, target_col, display_stats)
 ```
 
 Given a dataframe with a specified target column, find a set of rules that describe the patterns associated
@@ -210,7 +210,6 @@ get_bin_ranges()
 ```
 
 Get the bin boundaries for the bins used for numeric features. No parameters. Returns a dictionary, with the column names as the keys.
-
 
 
 
