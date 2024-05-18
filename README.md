@@ -1,7 +1,7 @@
 # PRISM-Rules
 
 ## Background
-PRISM is a rules-induction system first proposed by Chendrowska [[1]](#references) [[2]](#references) and described in Principles of Data Mining [[3]](#references). While there are numerous other rule induction systems that are able to, at least for some datasets, construct accurate and interpretable rules, to our knowledge there was no implementation of PRISM in python available, and it can be a useful tool for data mining and for prediction, often producing a concise, clean set of iterpretable rules. 
+PRISM is a rules-induction system first proposed by Chendrowska [[1]](#references) [[2]](#references) and described in Principles of Data Mining [[3]](#references). While there are numerous other rule induction systems that are able to, at least for some datasets, construct accurate and interpretable rules, to our knowledge there was no implementation of PRISM in python available, and it can be a useful tool for data mining and for prediction, often producing a concise, clean set of interpretable rules. 
 
 PRISM supports generating rules both to describe patterns within a table (in the form of associations between the features) and as a predictive model. As a predictive model, it creates fully-interpretable predictions, which allows both understanding the model as a whole and individual predictions. 
 
