@@ -117,7 +117,9 @@ flavanoids = Low AND color_intensity = High AND hue = Low
 
 To create predictions, we simply call predict() passing a dataframe with the same features as the dataframe used to fit the model (though the target column may optionally be ommited).
 
+```
 y_pred = prism.predict(df.drop(columns=['Y']))
+```
 
 Further examples are provided in the sample notebooks.
 
