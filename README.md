@@ -3,7 +3,7 @@
 ## Background
 PRISM is a rules-induction system first proposed by Chendrowska [[1]](#references) [[2]](#references) and described in Principles of Data Mining [[3]](#references). While there are numerous other rule induction systems that are able to, at least for some datasets, construct accurate and interpretable rules, to our knowledge there was no implementation of PRISM in python available, and it can be a useful tool for data mining and for prediction, often producing a concise, clean set of iterpretable rules. 
 
-PRISM supports generating rules both as a process to describe patterns within a table (in the form of associations between the features) and as a predictive model. As a predictive model, it creates fully-interpretable predictions, which allows both understanding the model as a whole and individual predictions. 
+PRISM supports generating rules both to describe patterns within a table (in the form of associations between the features) and as a predictive model. As a predictive model, it creates fully-interpretable predictions, which allows both understanding the model as a whole and individual predictions. 
 
 The rules produced are in disjunctive normal form (an OR of ANDs), with each individual rule being the AND of one or more terms, with each term of the form Feature = Value, for some Value within the values for that Feature. For example: the rules produced may be of the form:
 
@@ -17,12 +17,14 @@ Rules for target value: 'red':
 
 The algorithm works strictly with categorical features, in both the X and Y columns. This implementation will, therefore, automatically bin any numeric columns to support the algorithm. By default, three equal-count bins (representing low, medium, and high values for the feature) are used, but this is configurable through the nbins parameter. 
 
-The algorithm works by creating a set of rules for each class in the target column. The generated rules should be read in a first-rule-to-fire manner, and so all rules are generated and presented in a sensible order. For each unique value in the target column, the algorithm generates one rule at a time. As each rule is discovered, the rows matching that rule are removed, and the next rule is found to best describe the remaining rows. The rules may each have any number of terms. For each value in the target column, we start again with the full dataset, removing rows as rules are discovered, and generating additional rules to explain the remaining rows for this target class value. 
+The algorithm works by creating a set of rules for each class in the target column. The generated rules should be read in a first-rule-to-fire manner, and so all rules are generated and presented in a sensible order. For each unique value in the target column, the algorithm generates one rule at a time. As each rule is discovered, the rows matching that rule are removed, and the next rule is found to best describe the remaining rows for that target value. The rules may each have any number of terms. 
+
+For each value in the target column, we start again with the full dataset, removing rows as rules are discovered, and generating additional rules to explain the remaining rows for this target class value. 
 
 This implementation enhances the algorithm as described in Principles of Data Mining by outputting statistics related to each rule, as many induced rules can be of minimal significance, or of substantially lower signficance than other rules induced. As well, it allows providing parameters to specify the minimum coverage for each rule: the minimum number of rows in the training data for which it applies; and the minimum support: the minimum probability of the target class matching the desired value for rows matching the rule. These help reduce noise, though can result in some target classes having few or no rules, potentially not covering all rows for one or more target column values. In these cases, users may wish to adjust these paramaters. 
 
 ## Comparison to Decision Trees
-Decision trees are among the most common interpretable models, quite possibly the most common. When sufficiently small, they can be reasonably interpretable, perhaps as interpretable as any model type, and they can be reasonably accurate for many problems. They do have limitations as interpretable models, which PRISM was designed to address. Decision trees were not specifically designed to be interpretable; it is a convenient property of decision trees that they are as interpretable as they are. They do, however, often grow much larger than is easily comprehensible, often with repeated sub-trees as relationships to features have to be repeated many times within the trees to be properly captured. As well, the decision paths for indivdiual predictions may include nodes that are irrelevant, or even misleading, to the final predictions, further reducing comprensibility. 
+Decision trees are among the most common interpretable models, quite possibly the most common. When sufficiently small, they can be reasonably interpretable, perhaps as interpretable as any model type, and they can be reasonably accurate for many problems. They do have limitations as interpretable models, which PRISM was designed to address. Decision trees were not specifically designed to be interpretable; it is a convenient property of decision trees that they are as interpretable as they are. They, for example, often grow much larger than is easily comprehensible, often with repeated sub-trees as relationships to features have to be repeated many times within the trees to be properly captured. As well, the decision paths for indivdiual predictions may include nodes that are irrelevant, or even misleading, to the final predictions, further reducing comprensibility. 
 
 The Cendrowska paper provides examples of simple sets of rules that cannot be represented easily by trees. For example, the rules:
 
@@ -45,9 +47,9 @@ from prism_rules import PrismRules
 
 Two example notebooks are provided here. 
 
-[All Columns](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/Examples/PRISM%20Rules%20-%20All%20Columns.ipynb) provides an example examining a single file, creating PRISM rules for each column where possible. This includes examples using PRISM as a predictive model as well.
+[All Columns](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/Examples/PRISM%20Rules%20-%20All%20Columns.ipynb) provides an example examining a single file, creating PRISM rules for each column where possible. This is an example where PRISM rules may be used as a descriptive model, to help understand the primary patterns in the data. 
 
-[Rule Examples](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/Examples/PRISM%20Rules%20Examples.ipynb) provides examples with several real and synthetic datasets, predicting the target column for each. 
+[Rule Examples](https://github.com/Brett-Kennedy/PRISM-Rules/blob/main/Examples/PRISM%20Rules%20Examples.ipynb) provides examples with several real and synthetic datasets, predicting the target column for each. This includes examples using PRISM as a predictive model as well.
 
 ## Example using the Wine dataset from sklearn
 
@@ -110,6 +112,14 @@ flavanoids = Low AND color_intensity = High AND hue = Low
       43.750% of total rows for target value: 2
       11.798% of total rows in data
 ```
+
+## Example using the Wine dataset from sklearn, with prediction
+
+To create predictions, we simply call predict() passing a dataframe with the same features as the dataframe used to fit the model (though the target column may optionally be ommited).
+
+y_pred = prism.predict(df.drop(columns=['Y']))
+
+Further examples are provided in the sample notebooks.
 
 ## Example with Numeric Data
 
@@ -215,10 +225,12 @@ Get the bin boundaries for the bins used for numeric features. No parameters. Re
 
 ### predict()
 ```
-predict(X)
+predict(X, leave_unknown=True)
 ```
 
 Generate a prediction for each row in X. This returns an array of the same length of X with a class prediction for each. 
+
+While generating predictions, some rows may match no rules. In this case, by default, the most common value in the target column during training will be used. If leave_unknown is set to True, then any records not matching any rules will be set to "NO PREDICTION". In this case, the predictions will be returned as a string type, even if the original target column was numeric. 
 
 
 
