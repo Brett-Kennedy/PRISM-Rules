@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from pandas.api.types import is_numeric_dtype
 
 
@@ -20,6 +21,9 @@ class PrismRules:
         self.nbins = nbins
         self.bin_ranges = {}
         self.verbose = verbose
+        self.default_target = None
+        self.predict_dict = {}
+        self.target_column = ""
 
         # For improved performance, integer values are used for each value. This dictionary maps the integer codes
         # to the original values, and is used to display the rules and target values. Where the column is numeric,
@@ -135,6 +139,11 @@ class PrismRules:
             if not terms_list:
                 break
 
+            if target_val in self.predict_dict:
+                self.predict_dict[target_val].append(terms_list)
+            else:
+                self.predict_dict[target_val] = [terms_list]
+
             # Add a rule in string format representing the list of terms returned
             rule_str = ""
             for term in terms_list:
@@ -171,10 +180,12 @@ class PrismRules:
     def __display_rules(self, df, target_col, rules_dict, display_stats):
         for target_val in rules_dict:
             print()
+            print('........................................................................')
             print(f"Target: {self.int_to_values_map[target_col][target_val]}")
+            print('........................................................................')
             if len(rules_dict[target_val]) == 0 and display_stats:
                 print((f"  No rules imputed for target value {self.int_to_values_map[target_col][target_val]}. There "
-                       f"are {df[target_col].tolist().count(target_val)} rows for this class"))
+                       f"are {df[target_col].tolist().count(target_val)} rows for this class."))
             for r in rules_dict[target_val]:
                 if display_stats:
                     print(r)
@@ -192,7 +203,8 @@ class PrismRules:
         :return: array of strings, with each element of the array representing one rule.
         """
 
-        # PRISM requires all columns be categorical, so bin any numeric features, including the target column if necessary.
+        # PRISM requires all columns be categorical, so bin any numeric features, including the target column if
+        # necessary.
         new_vals_dict = {}
         for col_name in df.columns:
             if is_numeric_dtype(df[col_name]) and (df[col_name].nunique() > 10):
@@ -246,10 +258,62 @@ class PrismRules:
 
         self.__display_rules(df, target_col, rules_dict, display_stats)
 
+        self.default_target = df[target_col].mode().values[0]
+        self.target_column = target_col
+
         return rules_dict
+
+    def predict(self, X_in, leave_unknown=False):
+        X = X_in.copy()
+        X = X.reset_index(drop=True)
+        if leave_unknown:
+            ret = ["NO PREDICTION"]*len(X)
+        else:
+            ret = [self.default_target]*len(X)
+        is_set = [False]*len(X)
+
+        for col_name in X.columns:
+            if col_name not in self.bin_ranges:
+                continue
+            bin_ranges = self.bin_ranges[col_name]
+            for i in range(len(X)):
+                v = X.loc[i, col_name]
+                for bin_idx, bin_limit in enumerate(bin_ranges):
+                    if v < bin_limit:
+                        X.loc[i, col_name] = bin_idx - 1
+                        break
+            if col_name in self.int_to_values_map:
+                X[col_name] = X[col_name].map(self.int_to_values_map[col_name])
+
+        for i in range(len(X)):
+            row = X.iloc[i]
+            found_rule = False
+            for key in self.predict_dict.keys():
+                rules = self.predict_dict[key]
+                for rule in rules:
+                    all_terms_true = True
+                    for term in rule:
+                        term_feature_name = term[0]
+                        term_value = term[1]
+                        if row[term_feature_name] != term_value:
+                            all_terms_true = False
+                            break
+                    if all_terms_true:
+                        ret[i] = key
+                        is_set[i] = True
+                        found_rule = True
+                        break
+                if found_rule:
+                    break
+        ret = pd.Series(ret).map(self.int_to_values_map[self.target_column])
+        if leave_unknown:
+            ret = ret.fillna("NO PREDICTION")
+            ret = ret.astype(str)
+        return ret
 
     def get_bin_ranges(self):
         if self.bin_ranges is None:
             print("No columns were binned.")
         else:
             return self.bin_ranges
+
