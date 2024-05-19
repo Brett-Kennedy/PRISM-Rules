@@ -149,7 +149,7 @@ _ = prism.get_prism_rules(df, 'Y')
 ```
 
 ### Results
-The data is binned into low, medium, and high values for each column. The results are a set of rules per target class, each with the 
+The data is binned into low, medium, and high values for each column. The results are a set of rules per target class. 
 
 ```
 Target: 0
