@@ -173,7 +173,7 @@ class PrismRules:
             is_first_rule = False
 
             # Remove all rows for this rule
-            df = df.loc[set(df.index) - set(rule_df.index)]
+            df = df.loc[list(set(df.index) - set(rule_df.index))]
             target_val_remaining = df[target_col].tolist().count(target_val)
         return rules_for_val
 
